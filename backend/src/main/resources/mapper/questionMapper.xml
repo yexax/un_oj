@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.example.backend.mapper.QuestionMapper">
+    <insert id="addQuestion" parameterType="com.example.backend.model.entities.Question">
+        insert into question(title, content, tags,judgeCase, judgeConfig, userId)
+        VALUES(#{title},#{content},#{tags},#{judgeCase},#{judgeConfig},#{userId})
+    </insert>
+    <select id="getQuestionById" resultType="com.example.backend.model.entities.Question">
+        select * from question where id=#{id}
+    </select>
+    <select id="listQuestionByPage" resultType="com.example.backend.model.entities.Question">
+        select * from question limit #{x},#{y}
+    </select>
+    <select id="updateQuestionById" resultType="Boolean">
+        update question
+        <set>
+            <if test="title!=null">
+                title=#{title},
+            </if>
+            <if test="content!=null">
+                content=#{content},
+            </if>
+            <if test="tags!=null">
+                tags=#{tags},
+            </if>
+            <if test="submitNum!=null">
+                submitNum=#{submitNum},
+            </if>
+            <if test="acceptNum!=null">
+                acceptNum=#{acceptNum},
+            </if>
+            <if test="judgeCase!=null">
+                judgeCase=#{judgeCase},
+            </if>
+            <if test="judgeConfig!=null">
+                judgeConfig=#{judgeConfig},
+            </if>
+        </set>
+        where id=#{id}
+    </select>
+    <delete id="deleteQuestionById">
+        delete from question where id=#{id}
+    </delete>
+</mapper>
