@@ -10,6 +10,7 @@ import com.example.backend.model.dto.question.JudgeConfig;
 import com.example.backend.model.dto.question.QuestionUpdateRequest;
 import com.example.backend.model.dto.user.UserRegisterRequest;
 import com.example.backend.model.entities.Question;
+import com.example.backend.model.vo.QuestionPageVO;
 import com.example.backend.model.vo.UserVO;
 import com.example.backend.service.QuestionService;
 import com.example.backend.service.UserService;
@@ -96,8 +97,11 @@ public class QuestionController {
         return ResultUtils.success(true);
     }
     @GetMapping("list/page")
-    public BaseResponse<List<Question>> listQuestionByPage(Integer page,Integer pageSize){
-        List<Question> questions = questionService.listQuestionByPage(page, pageSize);
-        return ResultUtils.success(questions);
+    public BaseResponse<QuestionPageVO> listQuestionByPage(Integer page, Integer pageSize){
+        return ResultUtils.success(questionService.listQuestionByPage(page, pageSize));
+    }
+    @GetMapping("search")
+    public BaseResponse<QuestionPageVO>searchQuestionByPage(Integer page,Integer pageSize,String title,String tags){
+        return ResultUtils.success(questionService.searchQuestionByPage(page,pageSize,title,tags));
     }
 }

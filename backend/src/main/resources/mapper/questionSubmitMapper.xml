@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.example.backend.mapper.QuestionSubmitMapper">
+    <insert id="questionSubmit" useGeneratedKeys="true" keyProperty="id">
+        insert into question_submit(language,code,questionId,userId)
+        values (#{language},#{code},#{questionId},#{userId})
+    </insert>
+    <select id="listQuestionSubmit" resultType="com.example.backend.model.entities.QuestionSubmit">
+        select * from question_submit limit #{x},#{y}
+    </select>
+    <select id="getCount" resultType="Integer">
+        select count(*) from question_submit
+    </select>
+    <select id="getById" resultType="com.example.backend.model.entities.QuestionSubmit">
+        select * from question_submit where id=#{id}
+    </select>
+    <update id="updateStatus">
+        update question_submit set status=#{status} where id=#{id}
+    </update>
+</mapper>

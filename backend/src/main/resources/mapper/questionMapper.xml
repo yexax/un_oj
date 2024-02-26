@@ -42,4 +42,16 @@
     <delete id="deleteQuestionById">
         delete from question where id=#{id}
     </delete>
+    <select id="getCount" resultType="Integer">
+        select count(*) from question;
+    </select>
+    <select id="searchQuestionByPage" resultType="com.example.backend.model.entities.Question">
+        select * from question where title like concat('%',#{title},'%') and tags like concat('%',#{tags},'%') limit #{x},#{y}
+    </select>
+    <select id="getCountBySearch" resultType="Integer">
+        select count(*) from question where title like concat('%',#{title},'%') and tags like concat('%',#{tags},'%')
+    </select>
+    <update id="statistics">
+        update question set acceptNum=acceptNum+#{isAccept},submitNum=submitNum+1 where id=#{id}
+    </update>
 </mapper>

@@ -26,4 +26,13 @@ class QuestionMapperTest {
 //        System.out.println(questionMapper.updateQuestionById(question));
         questionService.updateQuestion(question);
     }
+    @Test
+    public void test2(){
+        List<Question> questions = questionMapper.searchQuestionByPage(10, 0, "sdsdf", "dp");
+        System.out.println(questionMapper.getCountBySearch("", ""));
+    }
+    @Test
+    void test3(){
+        questionMapper.statistics(1L,1);
+    }
 }

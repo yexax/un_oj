@@ -24,4 +24,17 @@ create table if not exists question(
      createTime  datetime default CURRENT_TIMESTAMP not null,
      updateTime  datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP,
      isDelete tinyint default 0 not null comment '是否删除'
+);
+
+create table if not exists question_submit(
+    id          bigint auto_increment primary key comment 'id',
+    language    varchar(128)    not null comment '编程语言',
+    code        text            not null comment '提交代码',
+    judgeInfo   text            null comment '判题信息，如时间消耗',
+    status      varchar(128) default 'Waiting'   not null comment '判题状态信息',
+    questionId  bigint not null comment '题目id',
+    userId      bigint not null comment '创建用户id',
+    createTime  datetime default CURRENT_TIMESTAMP not null,
+    updateTime  datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP,
+    isDelete tinyint default 0 not null comment '是否删除'
 )
