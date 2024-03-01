@@ -2,10 +2,10 @@ package com.example.backend.judge.impl;
 
 import cn.hutool.json.JSONUtil;
 import com.example.backend.codesandbox.model.ExecuteStatusEnum;
+import com.example.backend.codesandbox.CodeSandboxFactory;
 import com.example.backend.common.ErrorCode;
 import com.example.backend.exception.BusinessException;
 import com.example.backend.codesandbox.CodeSandbox;
-import com.example.backend.codesandbox.impl.JavaNativeCodesandbox;
 import com.example.backend.codesandbox.model.ExecuteCodeRequest;
 import com.example.backend.codesandbox.model.ExecuteCodeResponse;
 import com.example.backend.judge.JudgeService;
@@ -16,6 +16,7 @@ import com.example.backend.model.dto.question.JudgeCase;
 import com.example.backend.model.dto.question.JudgeConfig;
 import com.example.backend.model.entities.Question;
 import com.example.backend.model.entities.QuestionSubmit;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -28,6 +29,9 @@ public class JudgeServiceImpl implements JudgeService {
     private QuestionSubmitMapper questionSubmitMapper;
     @Resource
     private QuestionMapper questionMapper;
+    @Value("${codesandbox.type:example}")
+    private String type;
+
     @Override
     public JudgeResponseEnum doJudge(Long questionSubmitId) {
         QuestionSubmit questionSubmit = questionSubmitMapper.getById(questionSubmitId);
@@ -48,7 +52,7 @@ public class JudgeServiceImpl implements JudgeService {
                 .inputList(inputList)
                 .language(questionSubmit.getLanguage())
                 .build();
-        CodeSandbox codeSandbox=new JavaNativeCodesandbox();
+        CodeSandbox codeSandbox= CodeSandboxFactory.newInstance(type);
         ExecuteCodeResponse executeCodeResponse = codeSandbox.executeCode(executeCodeRequest);
         //判断程序是否正常执行
         ExecuteStatusEnum executeStatus = executeCodeResponse.getStatus();

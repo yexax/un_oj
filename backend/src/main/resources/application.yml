@@ -8,3 +8,8 @@ spring:
 server:
   servlet:
     context-path: /api
+
+# 代码沙箱配置
+codesandbox:
+  type: example
+
