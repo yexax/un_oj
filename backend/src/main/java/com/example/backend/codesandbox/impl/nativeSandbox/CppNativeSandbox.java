@@ -1,11 +1,12 @@
 package com.example.backend.codesandbox.impl.nativeSandbox;
 
 import cn.hutool.core.io.FileUtil;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
-
+@Slf4j
 public class CppNativeSandbox extends NativeSandboxTemplate {
     @Override
     protected void saveCodeToFile(String code) {
@@ -35,10 +36,12 @@ public class CppNativeSandbox extends NativeSandboxTemplate {
 
     @Override
     protected Process runCode() {
-        String runCmd = getCodeParentPath()+ File.separator+"main.exe";
+        String runCmd = getCodeParentPath()+ File.separator+"main";
+        log.info("准备执行命令"+runCmd);
         Process process = null;
         try {
             process = Runtime.getRuntime().exec(runCmd);
+            log.info("执行完成");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

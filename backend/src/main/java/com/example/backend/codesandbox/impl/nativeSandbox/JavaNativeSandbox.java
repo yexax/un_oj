@@ -19,7 +19,7 @@ public class JavaNativeSandbox extends NativeSandboxTemplate {
 
     @Override
     protected int compileCode() {
-        String compileCmd = "javac " + super.getCodePath();
+        String compileCmd = "javac -encoding utf-8 " + super.getCodePath();
         Process compileProcess = null;
         try {
             //编译
@@ -35,7 +35,7 @@ public class JavaNativeSandbox extends NativeSandboxTemplate {
 
     @Override
     protected Process runCode() {
-        String runCmd = "java -Xmx256m -cp " + getCodeParentPath() + " Main";
+        String runCmd = "java -Xmx256m -Dfile.encoding=UTF-8 -cp " + getCodeParentPath() + " Main";
         Process process = null;
         try {
             process = Runtime.getRuntime().exec(runCmd);

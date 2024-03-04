@@ -1,15 +1,5 @@
 server:
   port: 8090
 spring:
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/shiyi_oj?useUnicode=true&characterEncoding=utf-8&useSSL=false
-    username: root
     password: 1234
-
-mybatis:
-  mapperLocations: classpath:mapper/*.xml
-  type-aliases-package: com.example.backend.model.entities    # 所有Entity别名类所在包

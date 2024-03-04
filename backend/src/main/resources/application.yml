@@ -2,14 +2,28 @@ spring:
   application:
     name: shiyi-oj-backend
   profiles:
-    active: test
+    active: prod
   session:
     timeout: 259200
+
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/shiyi_oj?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    username: root
+
 server:
   servlet:
     context-path: /api
 
+
+mybatis:
+  mapperLocations: classpath:mapper/*.xml
+  type-aliases-package: com.example.backend.model.entities    # 所有Entity别名类所在包
+
 # 代码沙箱配置
 codesandbox:
-  type: example
+  type: native
 

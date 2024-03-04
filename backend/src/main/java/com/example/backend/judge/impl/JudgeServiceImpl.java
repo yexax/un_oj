@@ -16,6 +16,7 @@ import com.example.backend.model.dto.question.JudgeCase;
 import com.example.backend.model.dto.question.JudgeConfig;
 import com.example.backend.model.entities.Question;
 import com.example.backend.model.entities.QuestionSubmit;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class JudgeServiceImpl implements JudgeService {
     @Resource
     private QuestionSubmitMapper questionSubmitMapper;
@@ -69,10 +71,17 @@ public class JudgeServiceImpl implements JudgeService {
         List<String> outputList = executeCodeResponse.getOutputList();
         List<String> answerOutputList = judgeCaseList.stream().map(JudgeCase::getOutput).collect(Collectors.toList());
         if(outputList.size()!=answerOutputList.size()){
+            log.info("答案错误输出个数不等");
             return JudgeResponseEnum.WRONGANSWER;
         }
         for(int i=0;i<outputList.size();i++){
-            if(!answerOutputList.get(i).equals(outputList.get(i))){
+            String output=outputList.get(i);
+            if(output.charAt(output.length()-1)==' '){
+                output=output.substring(0,output.length()-1);
+            }
+            if(!answerOutputList.get(i).equals(output)){
+                log.info("答案错误，正确为："+answerOutputList.get(i));
+                log.info("输出为："+output);
                 return JudgeResponseEnum.WRONGANSWER;
             }
         }

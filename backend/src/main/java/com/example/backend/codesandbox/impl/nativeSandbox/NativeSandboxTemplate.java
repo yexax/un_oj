@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StopWatch;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
@@ -45,34 +47,37 @@ public abstract class NativeSandboxTemplate {
         List<String> inputList = executeCodeRequest.getInputList();
         //保存代码为文件
         saveCodeToFile(code);
+        log.info("代码保存成功");
         //编译代码
         int compileExitValue = compileCode();
             //编译失败
         if(compileExitValue!=0){
+            log.info("编译失败");
             response.setStatus(ExecuteStatusEnum.COMPILE_ERROR);
             return response;
         }
-
+        log.info("编译成功");
         long maxTime=0;//所有用例运行时间最大值
         List<String> outputList= new ArrayList<>();
-        //一组用例运行一次代码
-        for(String input:inputList){
-            StopWatch stopWatch = new StopWatch();//用来计算程序执行时间
-            stopWatch.start();
-            Process runProcess = runCode();
-            //创建一个守护线程，时间到了就去把runProcess销毁
-            new Thread(()->{
-                try {
-                    Thread.sleep(runTimeout);
-                    runProcess.destroy();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }).start();
-            //程序输入
-            OutputStream runProcessOutputStream = runProcess.getOutputStream();
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(runProcessOutputStream);
-            try {
+        try {
+            //一组用例运行一次代码
+            for(String input:inputList){
+                StopWatch stopWatch = new StopWatch();//用来计算程序执行时间
+                stopWatch.start();
+                Process runProcess = runCode();
+                //创建一个守护线程，时间到了就去把runProcess销毁
+                new Thread(()->{
+                    try {
+                        Thread.sleep(runTimeout);
+                        runProcess.destroy();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }).start();
+                //程序输入
+                log.info("程序输入");
+                OutputStream runProcessOutputStream = runProcess.getOutputStream();
+                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(runProcessOutputStream);
                 outputStreamWriter.write(input+"\n");
                 outputStreamWriter.flush();
                 runProcessOutputStream.close();
@@ -86,11 +91,25 @@ public abstract class NativeSandboxTemplate {
 
                 //运行错误
                 if(runExitValue!=0){
+                    log.error("运行错误");
                     log.info(runtime+"");
                     if(runtime>=runTimeout){
+                        log.error("运行超时");
                         response.setStatus(ExecuteStatusEnum.TIMELIMITEXCEEDED);
                         return response;
                     }
+                    // 异常退出
+                    log.error("运行失败"+runExitValue);
+                    // 分批获取进程的错误输出
+                    BufferedReader errorBufferedReader = new BufferedReader(new InputStreamReader(runProcess.getErrorStream()));
+                    // 逐行读取
+                    StringBuilder errorOutput=new StringBuilder();
+                    // 逐行读取
+                    String errorCompileOutputLine;
+                    while ((errorCompileOutputLine = errorBufferedReader.readLine()) != null) {
+                        errorOutput.append(errorCompileOutputLine);
+                    }
+                    log.error("运行错误信息："+errorOutput);
                     response.setStatus(ExecuteStatusEnum.RUNTIME_ERROR);
                     String RuntimeErrorMessage = ProcessUtil.getOutputString(runProcess.getErrorStream());
                     response.setErrorMessage(RuntimeErrorMessage);
@@ -98,12 +117,12 @@ public abstract class NativeSandboxTemplate {
                 }
                 //将一组运行结果保存
                 outputList.add(ProcessUtil.getOutputString(runProcess.getInputStream()));
-            } catch (Exception e) {
-                throw new RuntimeException(e);
             }
+        }catch (Exception e){
+            throw new RuntimeException();
+        }finally {
+            FileUtil.del(codeParentPath);
         }
-        //清除文件
-        FileUtil.del(codePath);
         //设置返回对象
         response.setStatus(ExecuteStatusEnum.SUCCESS);
         response.setOutputList(outputList);
